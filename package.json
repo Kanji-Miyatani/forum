@@ -10,20 +10,22 @@
     "generate:importmap": "payload generate:importmap"
   },
   "dependencies": {
-    "@payloadcms/db-sqlite": "3.40.0",
-    "@payloadcms/next": "3.40.0",
-    "@payloadcms/richtext-lexical": "3.40.0",
-    "@payloadcms/translations": "3.40.0",
-    "@payloadcms/ui": "3.40.0",
+    "@payloadcms/db-postgres": "3.83.0",
+    "@payloadcms/next": "3.83.0",
+    "@payloadcms/richtext-lexical": "3.83.0",
+    "@payloadcms/translations": "3.83.0",
+    "@payloadcms/ui": "3.83.0",
     "graphql": "16.10.0",
-    "next": "^15.5.15",
-    "payload": "3.40.0",
+    "next": "15.4.11",
+    "payload": "3.83.0",
+    "pg": "8.14.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "sharp": "0.34.2"
   },
   "devDependencies": {
     "@types/node": "22.15.3",
+    "@types/pg": "8.11.11",
     "@types/react": "19.1.2",
     "@types/react-dom": "19.1.2",
     "typescript": "5.8.3"
