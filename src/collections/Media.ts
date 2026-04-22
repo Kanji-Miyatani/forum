@@ -19,7 +19,7 @@ export const Media: CollectionConfig = {
     delete: tenantDeleteAccess,
   },
   upload: {
-    staticDir: '../public/media',
+    staticDir: process.env.MEDIA_DIR || '../public/media',
     mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
     imageSizes: [
       {
