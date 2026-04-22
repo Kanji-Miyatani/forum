@@ -23,6 +23,7 @@ export const Pages: CollectionConfig = {
     group: 'コンテンツ',
     defaultColumns: ['title', 'slug', 'status', 'tenant', 'updatedAt'],
     preview: (doc) => {
+      if (!doc?.id) return null
       const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
       return `${serverUrl}/api/pages/${doc.id}`
     },
