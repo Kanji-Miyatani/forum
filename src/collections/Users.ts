@@ -5,7 +5,7 @@ const readAccess: Access = ({ req: { user } }) => {
   if (!user) return false
   if (user.roles?.includes('super-admin')) return true
   if (user.roles?.includes('tenant-admin')) {
-    const tenantId = typeof user.tenant === 'object'
+    const tenantId = user.tenant !== null && typeof user.tenant === 'object'
       ? (user.tenant as { id: number }).id
       : user.tenant
     if (!tenantId) return false
@@ -18,7 +18,7 @@ const updateAccess: Access = ({ req: { user }, id }) => {
   if (!user) return false
   if (user.roles?.includes('super-admin')) return true
   if (user.roles?.includes('tenant-admin')) {
-    const tenantId = typeof user.tenant === 'object'
+    const tenantId = user.tenant !== null && typeof user.tenant === 'object'
       ? (user.tenant as { id: number }).id
       : user.tenant
     if (!tenantId) return false
@@ -96,5 +96,18 @@ export const Users: CollectionConfig = {
       relationTo: 'media',
     },
   ],
+  hooks: {
+    beforeChange: [
+      async ({ operation, data, req }) => {
+        if (operation === 'create') {
+          const count = await req.payload.count({ collection: 'users', overrideAccess: true })
+          if (count.totalDocs === 0) {
+            return { ...data, roles: ['super-admin'] }
+          }
+        }
+        return data
+      },
+    ],
+  },
   timestamps: true,
 }
