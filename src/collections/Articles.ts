@@ -41,6 +41,7 @@ export const Articles: CollectionConfig = {
     group: 'コンテンツ',
     defaultColumns: ['title', 'category', 'status', 'publishedAt', 'tenant'],
     preview: (doc) => {
+      if (!doc?.id) return null
       const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
       return `${serverUrl}/api/articles/${doc.id}`
     },
