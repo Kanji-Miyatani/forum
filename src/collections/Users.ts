@@ -1,7 +1,7 @@
 import type { CollectionConfig, Access, Where } from 'payload'
 import { isSuperAdmin } from '../access/isSuperAdmin'
 
-const userReadAccess: Access = ({ req: { user } }) => {
+const readAccess: Access = ({ req: { user } }) => {
   if (!user) return false
   if (user.roles?.includes('super-admin')) return true
   if (user.roles?.includes('tenant-admin')) {
@@ -11,15 +11,10 @@ const userReadAccess: Access = ({ req: { user } }) => {
     if (!tenantId) return false
     return { tenant: { equals: tenantId } } as Where
   }
-  return { id: { equals: user.id } } as Where
+  return { id: { equals: (user as any).id } } as Where
 }
 
-const userCreateAccess: Access = ({ req: { user } }) => {
-  if (!user) return true // 新規登録を許可
-  return Boolean(user.roles?.includes('super-admin') || user.roles?.includes('tenant-admin'))
-}
-
-const userUpdateAccess: Access = ({ req: { user }, id }) => {
+const updateAccess: Access = ({ req: { user }, id }) => {
   if (!user) return false
   if (user.roles?.includes('super-admin')) return true
   if (user.roles?.includes('tenant-admin')) {
@@ -29,10 +24,10 @@ const userUpdateAccess: Access = ({ req: { user }, id }) => {
     if (!tenantId) return false
     return { tenant: { equals: tenantId } } as Where
   }
-  return (user.id === id) as boolean
+  return ((user as any).id === id) as boolean
 }
 
-const userDeleteAccess: Access = ({ req: { user } }) => {
+const deleteAccess: Access = ({ req: { user } }) => {
   if (!user) return false
   return Boolean(
     user.roles?.includes('super-admin') || user.roles?.includes('tenant-admin'),
@@ -42,31 +37,31 @@ const userDeleteAccess: Access = ({ req: { user } }) => {
 export const Users: CollectionConfig = {
   slug: 'users',
   labels: {
-    singular: 'ユーザー',
-    plural: 'ユーザー一覧',
+    singular: '管理ユーザー',
+    plural: '管理ユーザー一覧',
   },
   admin: {
     useAsTitle: 'email',
-    description: 'フォーラムのユーザーを管理します。',
-    group: 'ユーザー管理',
-    defaultColumns: ['email', 'displayName', 'roles', 'tenant', 'updatedAt'],
+    description: 'CMSの管理ユーザーを管理します。',
+    group: 'システム設定',
+    defaultColumns: ['email', 'name', 'roles', 'tenant', 'updatedAt'],
   },
   auth: true,
   access: {
-    read: userReadAccess,
-    create: userCreateAccess,
-    update: userUpdateAccess,
-    delete: userDeleteAccess,
+    read: readAccess,
+    create: ({ req: { user } }) => {
+      if (!user) return true
+      return Boolean(user.roles?.includes('super-admin') || user.roles?.includes('tenant-admin'))
+    },
+    update: updateAccess,
+    delete: deleteAccess,
   },
   fields: [
     {
-      name: 'displayName',
-      label: '表示名',
+      name: 'name',
+      label: '氏名',
       type: 'text',
       required: true,
-      admin: {
-        description: 'フォーラムで表示されるニックネーム',
-      },
     },
     {
       name: 'roles',
@@ -75,35 +70,26 @@ export const Users: CollectionConfig = {
       hasMany: true,
       options: [
         { label: 'スーパー管理者', value: 'super-admin' },
-        { label: 'テナント管理者', value: 'tenant-admin' },
-        { label: 'テナントメンバー', value: 'tenant-member' },
+        { label: 'サイト管理者', value: 'tenant-admin' },
+        { label: '編集者', value: 'tenant-member' },
       ],
       defaultValue: ['tenant-member'],
       access: {
-        update: ({ req: { user } }) =>
-          Boolean(user?.roles?.includes('super-admin')),
+        update: ({ req: { user } }) => Boolean(user?.roles?.includes('super-admin')),
       },
       admin: {
-        description: 'ユーザーの権限ロール（スーパー管理者のみ変更可能）',
+        description: 'スーパー管理者のみ変更可能',
       },
     },
     {
       name: 'tenant',
-      label: '所属テナント',
+      label: '担当サイト',
       type: 'relationship',
       relationTo: 'tenants',
       hasMany: false,
       admin: {
-        description: 'このユーザーが所属するテナント',
+        description: 'このユーザーが管理するサイト',
         condition: (data) => !data?.roles?.includes('super-admin'),
-      },
-    },
-    {
-      name: 'bio',
-      label: '自己紹介',
-      type: 'textarea',
-      admin: {
-        description: 'プロフィールの自己紹介文',
       },
     },
     {
@@ -111,9 +97,6 @@ export const Users: CollectionConfig = {
       label: 'アバター',
       type: 'upload',
       relationTo: 'media',
-      admin: {
-        description: 'プロフィール画像',
-      },
     },
   ],
   timestamps: true,

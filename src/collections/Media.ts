@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { tenantReadAccess, tenantWriteAccess, tenantDeleteAccess } from '../access/tenantAccess'
+import { tenantWriteAccess, tenantDeleteAccess } from '../access/tenantAccess'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -9,11 +9,11 @@ export const Media: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'filename',
-    description: 'アップロードされたメディアファイルを管理します。',
-    group: 'コンテンツ管理',
+    description: '画像・ファイルなどのメディアアセットを管理します。',
+    group: 'コンテンツ',
   },
   access: {
-    read: () => true, // メディアは公開
+    read: () => true,
     create: tenantWriteAccess,
     update: tenantWriteAccess,
     delete: tenantDeleteAccess,
@@ -22,35 +22,20 @@ export const Media: CollectionConfig = {
     staticDir: process.env.MEDIA_DIR || '../public/media',
     mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
     imageSizes: [
-      {
-        name: 'thumbnail',
-        width: 400,
-        height: 300,
-        position: 'centre',
-      },
-      {
-        name: 'card',
-        width: 768,
-        height: 576,
-        position: 'centre',
-      },
-      {
-        name: 'tablet',
-        width: 1024,
-        height: undefined,
-        position: 'centre',
-      },
+      { name: 'thumbnail', width: 400, height: 300, position: 'centre' },
+      { name: 'card', width: 768, height: 432, position: 'centre' },
+      { name: 'og', width: 1200, height: 630, position: 'centre' },
     ],
+    focalPoint: true,
   },
   fields: [
     {
       name: 'alt',
-      label: '代替テキスト（alt属性）',
+      label: 'alt テキスト',
       type: 'text',
       localized: true,
-      admin: {
-        description: '画像のアクセシビリティのための説明文',
-      },
+      required: true,
+      admin: { description: 'アクセシビリティ・SEOのための代替テキスト' },
     },
     {
       name: 'caption',
@@ -60,12 +45,10 @@ export const Media: CollectionConfig = {
     },
     {
       name: 'tenant',
-      label: '所属テナント',
+      label: '担当サイト',
       type: 'relationship',
       relationTo: 'tenants',
-      admin: {
-        description: 'このメディアが属するテナント（未設定の場合は共有）',
-      },
+      admin: { position: 'sidebar' },
     },
   ],
   timestamps: true,
