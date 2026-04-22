@@ -1,8 +1,8 @@
 import type { CollectionConfig, Access, Where } from 'payload'
 import { tenantWriteAccess, tenantDeleteAccess } from '../access/tenantAccess'
 
-const categoryReadAccess: Access = ({ req: { user } }) => {
-  if (!user) return true // 公開カテゴリーは未ログインでも閲覧可能
+const readAccess: Access = ({ req: { user } }) => {
+  if (!user) return true
   if (user.roles?.includes('super-admin')) return true
   const tenantId = typeof user.tenant === 'object'
     ? (user.tenant as { id: string }).id
@@ -19,12 +19,12 @@ export const Categories: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'name',
-    description: '投稿のカテゴリーを管理します。',
-    group: 'コンテンツ管理',
+    description: '記事のカテゴリーを管理します。',
+    group: 'コンテンツ',
     defaultColumns: ['name', 'slug', 'tenant', 'updatedAt'],
   },
   access: {
-    read: categoryReadAccess,
+    read: readAccess,
     create: tenantWriteAccess,
     update: tenantWriteAccess,
     delete: tenantDeleteAccess,
@@ -36,17 +36,15 @@ export const Categories: CollectionConfig = {
       type: 'text',
       required: true,
       localized: true,
-      admin: {
-        description: 'カテゴリーの表示名（多言語対応）',
-      },
     },
     {
       name: 'slug',
       label: 'スラッグ',
       type: 'text',
       required: true,
+      index: true,
       admin: {
-        description: 'URLで使用する識別子（英数字・ハイフンのみ）',
+        description: 'URLに使用する識別子（英数字・ハイフンのみ）',
       },
     },
     {
@@ -57,22 +55,18 @@ export const Categories: CollectionConfig = {
     },
     {
       name: 'tenant',
-      label: '所属テナント',
+      label: 'サイト',
       type: 'relationship',
       relationTo: 'tenants',
       required: true,
-      admin: {
-        description: 'このカテゴリーが属するテナント',
-      },
+      admin: { position: 'sidebar' },
     },
     {
       name: 'sortOrder',
       label: '表示順',
       type: 'number',
       defaultValue: 0,
-      admin: {
-        description: '数値が小さいほど先に表示されます',
-      },
+      admin: { position: 'sidebar' },
     },
   ],
   timestamps: true,

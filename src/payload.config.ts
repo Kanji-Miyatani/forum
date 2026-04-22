@@ -8,7 +8,8 @@ import { ja as jaTranslations } from '@payloadcms/translations/languages/ja'
 
 import { Tenants } from './collections/Tenants'
 import { Users } from './collections/Users'
-import { Posts } from './collections/Posts'
+import { Articles } from './collections/Articles'
+import { Pages } from './collections/Pages'
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
 
@@ -16,76 +17,56 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
-  // ===== 管理画面設定 =====
   admin: {
     user: Users.slug,
     importMap: {
       baseDir: path.resolve(dirname),
     },
     meta: {
-      titleSuffix: '- CMS管理',
-      description: '日本語対応マルチテナントヘッドレスCMS',
+      titleSuffix: '— CMS',
+      description: 'ヘッドレスCMS管理画面',
+      icons: [{ rel: 'icon', type: 'image/png', url: '/favicon.png' }],
     },
+    dateFormat: 'yyyy/MM/dd HH:mm',
   },
 
-  // ===== コレクション =====
-  collections: [Tenants, Users, Posts, Categories, Media],
+  collections: [Articles, Pages, Categories, Media, Tenants, Users],
 
-  // ===== エディタ設定 =====
   editor: lexicalEditor(),
 
-  // ===== データベース設定（SQLite） =====
   db: sqliteAdapter({
     client: {
-      url: process.env.DATABASE_URI || 'file:./forum.db',
+      url: process.env.DATABASE_URI || 'file:./cms.db',
     },
-    // スキーマをDBに直接反映（マイグレーションなしで初回起動時にテーブルを自動作成）
     push: true,
   }),
 
-  // ===== 多言語（ロケール）設定 =====
   localization: {
     locales: [
-      {
-        code: 'ja',
-        label: '日本語',
-      },
-      {
-        code: 'en',
-        label: 'English',
-      },
+      { code: 'ja', label: '日本語' },
+      { code: 'en', label: 'English' },
     ],
     defaultLocale: 'ja',
     fallback: true,
   },
 
-  // ===== 管理画面UI言語（日本語） =====
   i18n: {
     supportedLanguages: { ja: jaTranslations },
     fallbackLanguage: 'ja',
   },
 
-  // ===== シークレットキー =====
   secret: process.env.PAYLOAD_SECRET || 'default-secret-change-me',
 
-  // ===== TypeScript 型定義出力先 =====
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
 
-  // ===== アップロードファイル設定 =====
   upload: {
-    limits: {
-      fileSize: 5000000, // 5MB
-    },
+    limits: { fileSize: 10_000_000 }, // 10MB
   },
 
-  // ===== CORS設定 =====
-  cors: [process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'],
+  cors: [process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'].filter(Boolean),
+  csrf: [process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'].filter(Boolean),
 
-  // ===== CSRF設定 =====
-  csrf: [process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'],
-
-  // ===== Sharp（画像リサイズ）=====
   sharp,
 })
