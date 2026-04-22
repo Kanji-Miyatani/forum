@@ -23,8 +23,8 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     meta: {
-      titleSuffix: '- フォーラム管理',
-      description: '日本語対応マルチテナントフォーラム',
+      titleSuffix: '- CMS管理',
+      description: '日本語対応マルチテナントヘッドレスCMS',
     },
   },
 
@@ -39,6 +39,8 @@ export default buildConfig({
     client: {
       url: process.env.DATABASE_URI || 'file:./forum.db',
     },
+    // スキーマをDBに直接反映（マイグレーションなしで初回起動時にテーブルを自動作成）
+    push: true,
   }),
 
   // ===== 多言語（ロケール）設定 =====
