@@ -4,7 +4,7 @@ export const tenantReadAccess: Access = ({ req: { user } }) => {
   if (!user) return false
   if (user.roles?.includes('super-admin')) return true
   const tenantId = typeof user.tenant === 'object'
-    ? (user.tenant as { id: string }).id
+    ? (user.tenant as { id: number }).id
     : user.tenant
   if (!tenantId) return false
   return { tenant: { equals: tenantId } } as Where
@@ -14,7 +14,7 @@ export const tenantWriteAccess: Access = ({ req: { user } }) => {
   if (!user) return false
   if (user.roles?.includes('super-admin')) return true
   const tenantId = typeof user.tenant === 'object'
-    ? (user.tenant as { id: string }).id
+    ? (user.tenant as { id: number }).id
     : user.tenant
   if (!tenantId) return false
   if (user.roles?.includes('tenant-admin') || user.roles?.includes('tenant-member')) {
@@ -27,7 +27,7 @@ export const tenantDeleteAccess: Access = ({ req: { user } }) => {
   if (!user) return false
   if (user.roles?.includes('super-admin')) return true
   const tenantId = typeof user.tenant === 'object'
-    ? (user.tenant as { id: string }).id
+    ? (user.tenant as { id: number }).id
     : user.tenant
   if (!tenantId) return false
   if (user.roles?.includes('tenant-admin')) {

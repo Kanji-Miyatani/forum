@@ -6,7 +6,7 @@ const readAccess: Access = ({ req: { user } }) => {
   if (user.roles?.includes('super-admin')) return true
   if (user.roles?.includes('tenant-admin')) {
     const tenantId = typeof user.tenant === 'object'
-      ? (user.tenant as { id: string }).id
+      ? (user.tenant as { id: number }).id
       : user.tenant
     if (!tenantId) return false
     return { tenant: { equals: tenantId } } as Where
@@ -19,7 +19,7 @@ const updateAccess: Access = ({ req: { user }, id }) => {
   if (user.roles?.includes('super-admin')) return true
   if (user.roles?.includes('tenant-admin')) {
     const tenantId = typeof user.tenant === 'object'
-      ? (user.tenant as { id: string }).id
+      ? (user.tenant as { id: number }).id
       : user.tenant
     if (!tenantId) return false
     return { tenant: { equals: tenantId } } as Where
