@@ -2,7 +2,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { buildConfig } from 'payload'
-import { sqliteAdapter } from '@payloadcms/db-sqlite'
+import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { ja as jaTranslations } from '@payloadcms/translations/languages/ja'
 
@@ -25,18 +25,23 @@ export default buildConfig({
     meta: {
       titleSuffix: '— CMS',
       description: 'ヘッドレスCMS管理画面',
-      icons: [{ rel: 'icon', type: 'image/png', url: '/favicon.png' }],
     },
     dateFormat: 'yyyy/MM/dd HH:mm',
+    components: {
+      graphics: {
+        Logo: '@/components/admin/Logo',
+        Icon: '@/components/admin/Icon',
+      },
+    },
   },
 
   collections: [Articles, Pages, Categories, Media, Tenants, Users],
 
   editor: lexicalEditor(),
 
-  db: sqliteAdapter({
-    client: {
-      url: process.env.DATABASE_URI || 'file:./cms.db',
+  db: postgresAdapter({
+    pool: {
+      connectionString: process.env.DATABASE_URI,
     },
     push: true,
   }),
@@ -62,7 +67,7 @@ export default buildConfig({
   },
 
   upload: {
-    limits: { fileSize: 10_000_000 }, // 10MB
+    limits: { fileSize: 10_000_000 },
   },
 
   cors: [process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'].filter(Boolean),
