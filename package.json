@@ -4,7 +4,7 @@
   "description": "日本語対応マルチサイト対応ヘッドレスCMS（Payload CMS v3 + Next.js 15）",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "payload generate:types && payload generate:importmap && next build",
     "start": "next start",
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap"
