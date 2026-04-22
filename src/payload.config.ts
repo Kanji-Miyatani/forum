@@ -5,6 +5,7 @@ import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { ja as jaTranslations } from '@payloadcms/translations/languages/ja'
+import * as initialMigration from './migrations/initial'
 
 import { Tenants } from './collections/Tenants'
 import { Users } from './collections/Users'
@@ -44,6 +45,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI,
     },
     push: true,
+    prodMigrations: [initialMigration],
   }),
 
   localization: {
