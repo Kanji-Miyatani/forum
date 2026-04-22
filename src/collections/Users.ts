@@ -49,10 +49,7 @@ export const Users: CollectionConfig = {
   auth: true,
   access: {
     read: readAccess,
-    create: ({ req: { user } }) => {
-      if (!user) return true
-      return Boolean(user.roles?.includes('super-admin') || user.roles?.includes('tenant-admin'))
-    },
+    create: isSuperAdmin,
     update: updateAccess,
     delete: deleteAccess,
   },
