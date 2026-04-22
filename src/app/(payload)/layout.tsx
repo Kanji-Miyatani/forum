@@ -1,14 +1,26 @@
+import type { ServerFunctionClient } from 'payload'
+import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
+import configPromise from '@payload-config'
 import React from 'react'
+import { importMap } from './admin/importMap'
 
-export const metadata = {
-  title: 'CMS管理画面',
-  description: 'ヘッドレスCMS管理画面',
+type Args = {
+  children: React.ReactNode
 }
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+const serverFunction: ServerFunctionClient = async function (args) {
+  'use server'
+  return handleServerFunctions({
+    ...args,
+    config: configPromise,
+    importMap,
+  })
+}
+
+export default function Layout({ children }: Args) {
   return (
-    <html lang="ja">
-      <body>{children}</body>
-    </html>
+    <RootLayout config={configPromise} importMap={importMap} serverFunction={serverFunction}>
+      {children}
+    </RootLayout>
   )
 }
