@@ -1,10 +1,6 @@
 import { withPayload } from '@payloadcms/next/withPayload'
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  experimental: {
-    instrumentationHook: true,
-  },
-}
+const nextConfig = {}
 
 export default withPayload(nextConfig)

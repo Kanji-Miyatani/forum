@@ -1,7 +1,7 @@
 {
-  "name": "forum",
+  "name": "cms",
   "version": "1.0.0",
-  "description": "日本語対応マルチテナントフォーラム（Payload CMS v3 + Next.js 15）",
+  "description": "日本語対応マルチサイト対応ヘッドレスCMS（Payload CMS v3 + Next.js 15）",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
