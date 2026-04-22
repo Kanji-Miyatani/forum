@@ -5,7 +5,7 @@ const readAccess: Access = ({ req: { user } }) => {
   if (!user) return { status: { equals: 'published' } } as Where
   if (user.roles?.includes('super-admin')) return true
   const tenantId = typeof user.tenant === 'object'
-    ? (user.tenant as { id: string }).id
+    ? (user.tenant as { id: number }).id
     : user.tenant
   if (!tenantId) return false
   return { tenant: { equals: tenantId } } as Where
@@ -15,7 +15,7 @@ const updateAccess: Access = ({ req: { user } }) => {
   if (!user) return false
   if (user.roles?.includes('super-admin')) return true
   const tenantId = typeof user.tenant === 'object'
-    ? (user.tenant as { id: string }).id
+    ? (user.tenant as { id: number }).id
     : user.tenant
   if (!tenantId) return false
   if (user.roles?.includes('tenant-admin')) {
@@ -205,7 +205,7 @@ export const Articles: CollectionConfig = {
       ({ req, data }) => {
         if (req.user && !req.user.roles?.includes('super-admin')) {
           const userTenant = typeof req.user.tenant === 'object'
-            ? (req.user.tenant as { id: string }).id
+            ? (req.user.tenant as { id: number }).id
             : req.user.tenant
           if (userTenant) data.tenant = userTenant
           if (!data.author) data.author = (req.user as any).id
