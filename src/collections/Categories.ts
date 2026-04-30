@@ -4,7 +4,7 @@ import { tenantWriteAccess, tenantDeleteAccess } from '../access/tenantAccess'
 const readAccess: Access = ({ req: { user } }) => {
   if (!user) return true
   if (user.roles?.includes('super-admin')) return true
-  const tenantId = typeof user.tenant === 'object'
+  const tenantId = user.tenant !== null && typeof user.tenant === 'object'
     ? (user.tenant as { id: number }).id
     : user.tenant
   if (!tenantId) return false

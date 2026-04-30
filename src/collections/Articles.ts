@@ -4,7 +4,7 @@ import { tenantWriteAccess, tenantDeleteAccess } from '../access/tenantAccess'
 const readAccess: Access = ({ req: { user } }) => {
   if (!user) return { status: { equals: 'published' } } as Where
   if (user.roles?.includes('super-admin')) return true
-  const tenantId = typeof user.tenant === 'object'
+  const tenantId = user.tenant !== null && typeof user.tenant === 'object'
     ? (user.tenant as { id: number }).id
     : user.tenant
   if (!tenantId) return false
@@ -14,7 +14,7 @@ const readAccess: Access = ({ req: { user } }) => {
 const updateAccess: Access = ({ req: { user } }) => {
   if (!user) return false
   if (user.roles?.includes('super-admin')) return true
-  const tenantId = typeof user.tenant === 'object'
+  const tenantId = user.tenant !== null && typeof user.tenant === 'object'
     ? (user.tenant as { id: number }).id
     : user.tenant
   if (!tenantId) return false
@@ -205,7 +205,7 @@ export const Articles: CollectionConfig = {
     beforeChange: [
       ({ req, data }) => {
         if (req.user && !req.user.roles?.includes('super-admin')) {
-          const userTenant = typeof req.user.tenant === 'object'
+          const userTenant = req.user.tenant !== null && typeof req.user.tenant === 'object'
             ? (req.user.tenant as { id: number }).id
             : req.user.tenant
           if (userTenant) data.tenant = userTenant
